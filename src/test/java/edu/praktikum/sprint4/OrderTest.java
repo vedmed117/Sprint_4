@@ -6,79 +6,79 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
 
+@RunWith(Parameterized.class)
 public class OrderTest {
     private WebDriver webDriver;
     private WebDriverWait wait;
+    private String firstName;
+    private String lastName;
+    private String address;
+    private String metroStation;
+    private String phone;
+    private String date;
+    private String rentalPeriod;
+    private boolean isBlack;
+    private boolean isGrey;
+    private String comment;
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {"Иван", "Иванов", "ул. Пушкина, д. 10", "Черкизовская", "89991234567", "25.05.2024", "сутки", true, false, "Позвонить за час"},
+                {"Петр", "Петров", "ул. Лермонтова, д. 15", "Сокольники", "89991234568", "26.05.2024", "двое суток", false, true, "Не звонить"}
+        });
+    }
+
+    public OrderTest(String firstName, String lastName, String address, String metroStation, String phone, String date, String rentalPeriod, boolean isBlack, boolean isGrey, String comment) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.metroStation = metroStation;
+        this.phone = phone;
+        this.date = date;
+        this.rentalPeriod = rentalPeriod;
+        this.isBlack = isBlack;
+        this.isGrey = isGrey;
+        this.comment = comment;
+    }
 
     @Before
     public void setup() {
-        // Инициализируем поле класса webDriver для Firefox
         WebDriverManager.firefoxdriver().setup();
         webDriver = new FirefoxDriver();
-        // Инициализируем поле класса webDriver для Сhrome
-        // webDriver = new ChromeDriver();
-
         webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
         webDriver.manage().window().maximize();
         wait = new WebDriverWait(webDriver, 20);
     }
 
     @Test
-    public void testOrderProcess() throws InterruptedException {
+    public void testOrderProcess() {
         MainPage mainPage = new MainPage(webDriver);
         OrderPage orderPage = new OrderPage(webDriver);
 
-        // Открываем главную страницу
         mainPage.open();
-        Thread.sleep(2000);  // Задержка 2 секунды
-
-        // Закрываем куки сообщение
         closeCookieConsent();
 
-        // Переход на страницу заказа
         mainPage.clickOrder();
-        Thread.sleep(2000);  // Задержка 2 секунды
-
-        // Заполнение формы заказа
-        orderPage.fillOrderForm("Иван", "Иванов", "Абая 16", "Черкизовская", "83332463488");
-        Thread.sleep(2000);  // Задержка 2 секунды
-
+        orderPage.fillOrderForm(firstName, lastName, address, metroStation, phone);
         orderPage.clickNext();
-        Thread.sleep(2000);  // Задержка 2 секунды
+        orderPage.fillDeliveryForm(date, rentalPeriod, isBlack, isGrey, comment);
+        orderPage.clickOrder();
 
-        // Заполнение формы доставки
-        orderPage.fillDeliveryForm("12.06.2024", "сутки", true, false, "альфа 1 комментарий");
-        Thread.sleep(2000);
-
-        // Нажатие на кнопку "Заказать"
-        WebElement orderButton = webDriver.findElement(By.xpath("//button[contains(@class, 'Button_Button__ra12g Button_Middle__1CSJM') and text()='Заказать']"));
-        orderButton.click();
-        Thread.sleep(2000);  // Задержка 2 секунды
-
-        // Проверка видимости модального окна заказа
-        WebElement orderModal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'Order_ModalHeader__3FDaJ') and contains(text(), 'Хотите оформить заказ?')]")));
-        assertTrue("Order modal is not visible", orderModal.isDisplayed());
-
-        // Нажатие на кнопку "Да" в модальном окне
-        WebElement confirmButton = webDriver.findElement(By.xpath("//button[contains(@class, 'Button_Button__ra12g Button_Middle__1CSJM') and text()='Да']"));
-        confirmButton.click();
-        Thread.sleep(2000);  // Задержка 2 секунды
-
-        // Проверка наличия элемента с подтверждением заказа
-        WebElement orderConfirmation = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'Order_ModalHeader__3FDaJ') and contains(text(), 'Заказ оформлен')]")));
-        assertTrue("Order confirmation is not visible", orderConfirmation.isDisplayed());
+        assertTrue("Order modal is not visible", orderPage.isOrderModalVisible());
     }
 
     private void closeCookieConsent() {

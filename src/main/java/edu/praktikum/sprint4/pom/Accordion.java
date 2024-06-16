@@ -6,7 +6,6 @@ import org.openqa.selenium.WebDriver;
 public class Accordion {
     private final WebDriver webDriver;
 
-    // Локаторы для стрелок и выпадающих элементов
     private final By[] headings = {
             By.id("accordion__heading-0"),
             By.id("accordion__heading-1"),
@@ -29,7 +28,6 @@ public class Accordion {
             By.id("accordion__panel-7")
     };
 
-    // Ожидаемые тексты для выпадающих элементов
     private final String[] expectedTexts = {
             "Сутки — 400 рублей. Оплата курьеру — наличными или картой.",
             "Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим.",
@@ -41,32 +39,26 @@ public class Accordion {
             "Да, обязательно. Всем самокатов! И Москве, и Московской области."
     };
 
-    // Инициализация вебдрайвера
     public Accordion(WebDriver webDriver) {
         this.webDriver = webDriver;
     }
 
-    // Клик по элементу массива, передаем в него интеджер индекс
     public void clickHeading(int index) {
         webDriver.findElement(headings[index]).click();
     }
 
-    // Получаем текст элемента-выпадашки
     public String getPanelText(int index) {
         return webDriver.findElement(panels[index]).getText();
     }
 
-    // Возвращаем ожидаемый текст элемента-выпадашки
     public String getExpectedText(int index) {
         return expectedTexts[index];
     }
 
-    // геттер-получатель размера массива с элементами
     public int getAccordionSize() {
         return headings.length;
     }
 
-    // геттер-получатель массива локаторов заголовков
     public By[] getHeadings() {
         return headings;
     }
