@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 public class MainPage {
     private static final String URL = "https://qa-scooter.praktikum-services.ru/";
 
-    private final WebDriver webDriver;
+    private final WebDriver webDriver; //testtest
 
     private final By checkOrderButton = By.xpath(".//button[@class='Header_Link__1TAG7']");
     private final By orderButton = By.xpath(".//button[@class='Button_Button__ra12g']");
