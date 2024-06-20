@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 public class Accordion {
     private final WebDriver webDriver;
 
-    // Локаторы для стрелок и выпадающих элементов
+    // Локаторы для заголовков вопросов
     private final By[] headings = {
             By.id("accordion__heading-0"),
             By.id("accordion__heading-1"),
@@ -18,6 +18,7 @@ public class Accordion {
             By.id("accordion__heading-7")
     };
 
+    // Локаторы для панелей
     private final By[] panels = {
             By.id("accordion__panel-0"),
             By.id("accordion__panel-1"),
@@ -29,7 +30,7 @@ public class Accordion {
             By.id("accordion__panel-7")
     };
 
-    // Ожидаемые тексты для выпадающих элементов
+    // Ожидаемые тексты вопросов
     private final String[] expectedTexts = {
             "Сутки — 400 рублей. Оплата курьеру — наличными или картой.",
             "Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим.",
@@ -41,33 +42,41 @@ public class Accordion {
             "Да, обязательно. Всем самокатов! И Москве, и Московской области."
     };
 
-    // Инициализация вебдрайвера
+    // Локатор для выбранного заголовка
+    private By headingElement;
+
     public Accordion(WebDriver webDriver) {
         this.webDriver = webDriver;
     }
 
-    // Клик по элементу массива, передаем в него интеджер индекс
+    // Метод для клика по заголовку
     public void clickHeading(int index) {
-        webDriver.findElement(headings[index]).click();
+        headingElement = headings[index];
+        webDriver.findElement(headingElement).click();
     }
 
-    // Получаем текст элемента-выпадашки
+    // Метод для получения текста панели
     public String getPanelText(int index) {
         return webDriver.findElement(panels[index]).getText();
     }
 
-    // Возвращаем ожидаемый текст элемента-выпадашки
+    // Метод для получения ожидаемого текста
     public String getExpectedText(int index) {
         return expectedTexts[index];
     }
 
-    // геттер-получатель размера массива с элементами
+    // Метод для получения размера
     public int getAccordionSize() {
         return headings.length;
     }
 
-    // геттер-получатель массива локаторов заголовков
-    public By[] getHeadings() {
+    // Метод для получения массива локаторов заголовков
+        public By[] getHeadings() {
         return headings;
+    }
+
+    // Метод для получения локатора выбранного заголовка
+    public By getHeadingElement() {
+        return headingElement;
     }
 }
